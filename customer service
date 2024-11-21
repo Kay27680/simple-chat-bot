@@ -1,6 +1,4 @@
-from flask import Flask, request, jsonify
-
-app = Flask(__name__)
+import random
 
 # Predefined responses for the chatbot
 responses = {
@@ -12,14 +10,13 @@ responses = {
     "fallback": ["I'm sorry, I didn't understand that. Can you please rephrase?"]
 }
 
-
 def get_response(message):
     """
     Basic keyword matching to generate chatbot responses.
     """
     message = message.lower()
     if any(word in message for word in ["hi", "hello", "hey"]):
-        return responses["greeting"][0]
+        return random.choice(responses["greeting"])
     elif "hours" in message or "open" in message:
         return responses["hours"][0]
     elif "location" in message or "where" in message:
@@ -31,22 +28,19 @@ def get_response(message):
     else:
         return responses["fallback"][0]
 
-
-@app.route('/chat', methods=['POST'])
 def chat():
     """
-    API endpoint for chatting with the chatbot.
+    Function to start a chat with the chatbot.
     """
-    data = request.json
-    user_message = data.get("message", "")
-    if not user_message:
-        return jsonify({"response": "Please send a valid message."}), 400
+    print("Customer Service Bot: Hi! I am here to help you. Type 'exit' to end the chat.")
+    while True:
+        user_message = input("You: ")
+        if user_message.lower() == "exit":
+            print("Customer Service Bot: Thank you for chatting with us. Have a great day!")
+            break
+        bot_response = get_response(user_message)
+        print(f"Customer Service Bot: {bot_response}")
 
-    # Get a response from the chatbot
-    bot_response = get_response(user_message)
-
-    return jsonify({"response": bot_response})
-
-
-if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+# Start the chatbot
+if __name__ == "__main__":
+    chat()
